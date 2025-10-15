@@ -351,13 +351,28 @@ function App() {
          }
       };
       fetchUsers();
-  }, [])
+   }, [])
 
-  const handleUserClick = (user) => {
-  }
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredUsers(users)
+    } else {
+      const filtered = users.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      setFilteredUsers(filtered)
+    }
+  }, [searchTerm, users])
 
-  const handleCloseModal = () => {
-  }
+   const handleUserClick = (user) => {
+      setSelectedUser(user)
+      setShowModal(true)
+   }
+
+   const handleCloseModal = () => {
+      setShowModal(false)
+      setSelectedUser(null)
+   }
 
   return (
     <div className="app">
@@ -369,13 +384,15 @@ function App() {
       </header>
 
       <Container className="mb-4">
-        <SearchBar />
+        <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
-        {/* {loading && <Spinner ... />} */}
-        {/* {error && <Alert ...>{error}</Alert>} */}
-        {/* <UserList users={filteredUsers} onUserClick={handleUserClick} /> */}
-
-        <UserModal />
+         {/* {loading && <Spinner ... />} */}
+         {/* {error && <Alert ...>{error}</Alert>} */}
+         {/* <UserList users={filteredUsers} onUserClick={handleUserClick} /> */}
+         {loading && <Spinner animation="border" />}
+         {error && <Alert variant="danger">{error}</Alert>}
+         <UserList users={filteredUsers} onUserClick={handleUserClick} />
+         <UserModal show={showModal} user={selectedUser} onHide={handleCloseModal} />
       </Container>
 
       <footer className="bg-light py-4 mt-5">
